@@ -25,7 +25,7 @@ export const registration = async (req: Request, res: Response) => {
             return sendErrorResponse(res, 400, notify.WENT_WRONG);
         }
 
-        // // add user in db
+        // add user in db
         payload.password = credentials.hashedPassword;
         const user = await saveUser(payload);
         if (!user) {
@@ -206,7 +206,9 @@ async function sendMail(email: string, password: string) {
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS
-        }
+        },
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
     });
     const mailOptions = {
         from: `"My App" <${process.env.EMAIL_USER}>`,
