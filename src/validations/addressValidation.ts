@@ -6,4 +6,4 @@ export const addressValidation = Joi.object({
     district: { type: String, required: true },
     state: { type: String, required: true },
     zip: { type: Number, required: true },
-});
+}).required();

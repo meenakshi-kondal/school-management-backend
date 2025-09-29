@@ -1,11 +1,23 @@
 import mongoose, { Schema } from "mongoose";
 
+const classSchema = new mongoose.Schema({
+  class_name: { type: String, required: true },
+  subjects: [{ type: String }],
+});
+
 const user = new Schema({
-  username: { type: String, required: true, unique: true },
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  gender: { type: String, enum: ["male", "female", "other"], required: true },
+  dateOfBirth: { type: Date, required: true },
+  role: { type: String, enum: ["teacher", "student", "admin"], default: "teacher" },
+  qualification: { type: String },
+  class: [classSchema],
+  joiningDate: { type: Date, required: true },
+  is_bus_service: { type: Boolean, default: false },
   password: { type: String, required: true },
-  role: { type: String, enum: ["student", "teacher", "admin"], required: true }
 }, { timestamps: true });
 
-const UserSchema = mongoose.model("user_credentials", user);
+const UserSchema = mongoose.model("users", user);
 
 export default UserSchema;
