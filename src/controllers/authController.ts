@@ -207,8 +207,8 @@ async function sendMail(email: string, password: string) {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS
         },
-        connectionTimeout: 10000,
-        greetingTimeout: 10000,
+        connectionTimeout: 30000,
+        greetingTimeout: 30000,
     });
     const mailOptions = {
         from: `"My App" <${process.env.EMAIL_USER}>`,
