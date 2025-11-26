@@ -17,7 +17,7 @@ const user = new Schema({
   email: { type: String, required: true },
   gender: { type: String, enum: ["male", "female", "other"], required: true },
   dateOfBirth: { type: Date, required: true },
-  role: { type: String, enum: ["teacher", "student", "admin"], default: "teacher" },
+  role: { type: String, enum: ["teacher", "student", "admin"], default: "student" },
   qualification: [qualificationSchema],
   class: [classSchema],
   joiningDate: { type: Date, required: true },

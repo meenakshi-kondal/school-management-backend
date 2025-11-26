@@ -8,7 +8,7 @@ export const saveUser = async (data: any) => {
         const user = new UserSchema(data);
         return await user.save();
     } catch (error: any) {
-        return error.message;
+        throw new Error(error.message);
     }
 };
 
@@ -18,7 +18,7 @@ export const isCredentialsExist = async (password: string) => {
         return exist;
     } catch (error: any) {
         console.log(error)
-        return error.message;
+        throw new Error(error.message);
     }
 };
 
@@ -29,16 +29,16 @@ export const isUserExist = async (email: string) => {
         });
         return exist;
     } catch (error: any) {
-        return error.message;
+        throw new Error(error.message);
     }
 }
 
 export const isUser = async (id: string) => {
     try {
-        const exist = await UserSchema.findById(id);
+        const exist = await UserSchema.findById(id).select('-password');
         return exist;
     } catch (error: any) {
-        return error.message;
+        throw new Error(error.message);
     }
 }
 
@@ -47,7 +47,7 @@ export const saveToken = async (data: TOKEN) => {
         const token = new TokenSchema(data);
         return await token.save();
     } catch (error: any) {
-        return error.message;
+        throw new Error(error.message);
     }
 }
 
@@ -59,7 +59,7 @@ export const updatePassword = async (data: LOGIN) => {
             { new: true });
         return result;
     } catch (error: any) {
-        return error.message;
+        throw new Error(error.message);
     }
 }
 
@@ -71,8 +71,6 @@ export const updatePasswordById = async (data: LOGIN) => {
             { new: true });
         return result;
     } catch (error: any) {
-        return error.message;
+        throw new Error(error.message);
     }
 }
-
-

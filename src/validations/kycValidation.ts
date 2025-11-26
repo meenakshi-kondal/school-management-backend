@@ -1,4 +1,5 @@
 import Joi from "joi";
+import { documentValidation } from "./commonValidation";
 
 const guardianValidation = Joi.object({
     name: Joi.string().required(),
@@ -8,10 +9,6 @@ const guardianValidation = Joi.object({
     occupation: Joi.string().required(),
 });
 
-const documentValidation = Joi.object({
-    name: { type: Number, required: true },
-    url: { type: String, required: true },
-});
 
 export const kycValidtaion = Joi.object({
     user_id: { type: String, required: true },

@@ -11,5 +11,5 @@ export const notify = {
     WENT_WRONG: 'Something went wrong',
     ACCESS_DENIED: 'Access denied. No token provided',
     EX_TOKEN: 'Invalid or expired token',
-
+    GET: 'Details get successfully',
 }

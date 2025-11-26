@@ -12,6 +12,7 @@ dotenv.config();
 const JWT_SECRET_KEY = process.env.JWT_SECRET || '';
 
 export const registration = async (req: Request, res: Response) => {
+   
     try {
 
         const payload = req.body;
@@ -48,6 +49,7 @@ export const registration = async (req: Request, res: Response) => {
 }
 
 export const login = async (req: Request, res: Response) => {
+   
     try {
 
         const payload = req.body;
@@ -74,7 +76,7 @@ export const login = async (req: Request, res: Response) => {
         );
 
         const tokenPayload = {
-            token, user_id: isUser._id
+            token, user_id: isUser._id.toString()
         }
         await saveToken(tokenPayload);
 
@@ -86,6 +88,7 @@ export const login = async (req: Request, res: Response) => {
 }
 
 export const forgot_password = async (req: Request, res: Response) => {
+   
     try {
 
         const payload = req.body;
@@ -123,6 +126,7 @@ export const forgot_password = async (req: Request, res: Response) => {
 }
 
 export const update_password = async (req: Request, res: Response) => {
+   
     try {
 
         const payload = req.body;
@@ -157,6 +161,7 @@ export const update_password = async (req: Request, res: Response) => {
 }
 
 async function createPassword() {
+   
     try {
 
         const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -207,8 +212,6 @@ async function sendMail(email: string, password: string) {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS
         },
-        connectionTimeout: 30000,
-        greetingTimeout: 30000,
     });
     const mailOptions = {
         from: `"My App" <${process.env.EMAIL_USER}>`,

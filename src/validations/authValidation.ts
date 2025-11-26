@@ -70,3 +70,7 @@ export const loginValidation = Joi.object({
     "any.required": "Login credentials are required",
 });
 
+export const profileDetailValidation = Joi.object({
+   id: Joi.string().required(),
+}).required();
+
