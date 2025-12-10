@@ -12,4 +12,10 @@ export const notify = {
     ACCESS_DENIED: 'Access denied. No token provided',
     EX_TOKEN: 'Invalid or expired token',
     GET: 'Details get successfully',
+    TEACHER_CLASS_NOT_FOUND: 'You are not able to assign work because you are not assigned to this class',
+    ASSIGNED_WORK: 'Assignment sent successfully',
+    ALLREADY_ASSIGNED_WORK: 'Assignment is already assigned for this date',
+    TYPE_REQUIRED: 'Please send the type of user',
+    CLASSNAME_REQUIRED: 'Please send class of user',
+    PAGINATION: 'Pagination parameters are required'
 }

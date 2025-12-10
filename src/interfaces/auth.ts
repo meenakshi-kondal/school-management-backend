@@ -16,11 +16,13 @@ interface DOCUMENTS {
 }
 
 export interface ASSIGNMENT {
-    students: string[];
+    assigned_to: string[];
     class: string;
     subject: string;
     work: string;
     attachment: DOCUMENTS[];
-    assignedOn: string;
+    assigned_on: string;
+    assigned_by: string;
+    assigned_type: string;
 
 }

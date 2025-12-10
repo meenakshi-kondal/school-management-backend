@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema } from 'mongoose';
 
 const classSchema = new mongoose.Schema({
   class_name: { type: String, required: true },
@@ -15,16 +15,19 @@ const qualificationSchema = new mongoose.Schema({
 const user = new Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
-  gender: { type: String, enum: ["male", "female", "other"], required: true },
+  gender: { type: String, enum: ['male', 'female', 'other'], required: true },
   dateOfBirth: { type: Date, required: true },
-  role: { type: String, enum: ["teacher", "student", "admin"], default: "student" },
+  role: { type: String, enum: ['teacher', 'student', 'admin'],
+    default: 'student' },
   qualification: [qualificationSchema],
   class: [classSchema],
   joiningDate: { type: Date, required: true },
   is_bus_service: { type: Boolean, default: false },
   password: { type: String, required: true },
+  status: { type: String, enum: ['enable', 'disable'], default: 'enable'},
+  is_deleted: { type: Number, default: 0, enum:[0,1]}
 }, { timestamps: true });
 
-const UserSchema = mongoose.model("users", user);
+const UserSchema = mongoose.model('users', user);
 
 export default UserSchema;

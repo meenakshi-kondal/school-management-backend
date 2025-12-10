@@ -3,8 +3,10 @@ import TokenSchema from "../schema/tokenSchema";
 import UserSchema from "../schema/userSchema";
 
 
-export const saveUser = async (data: any) => {
+export const saveUser = async(data: any) => {
+
     try {
+
         const user = new UserSchema(data);
         return await user.save();
     } catch (error: any) {
@@ -12,8 +14,10 @@ export const saveUser = async (data: any) => {
     }
 };
 
-export const isCredentialsExist = async (password: string) => {
+export const isCredentialsExist = async(password: string) => {
+
     try {
+
         const exist = await UserSchema.findOne({ password });
         return exist;
     } catch (error: any) {
@@ -22,8 +26,10 @@ export const isCredentialsExist = async (password: string) => {
     }
 };
 
-export const isUserExist = async (email: string) => {
+export const isUserExist = async(email: string) => {
+
     try {
+
         const exist = await UserSchema.findOne({
             email
         });
@@ -33,8 +39,10 @@ export const isUserExist = async (email: string) => {
     }
 }
 
-export const isUser = async (id: string) => {
+export const isUser = async(id: string) => {
+
     try {
+
         const exist = await UserSchema.findById(id).select('-password');
         return exist;
     } catch (error: any) {
@@ -42,8 +50,10 @@ export const isUser = async (id: string) => {
     }
 }
 
-export const saveToken = async (data: TOKEN) => {
+export const saveToken = async(data: TOKEN) => {
+
     try {
+
         const token = new TokenSchema(data);
         return await token.save();
     } catch (error: any) {
@@ -51,8 +61,10 @@ export const saveToken = async (data: TOKEN) => {
     }
 }
 
-export const updatePassword = async (data: LOGIN) => {
+export const updatePassword = async(data: LOGIN) => {
+
     try {
+
         const result = await UserSchema.findOneAndUpdate(
             { email: data.email },
             { password: data.password },
@@ -63,8 +75,10 @@ export const updatePassword = async (data: LOGIN) => {
     }
 }
 
-export const updatePasswordById = async (data: LOGIN) => {
+export const updatePasswordById = async(data: LOGIN) => {
+
     try {
+
         const result = await UserSchema.findOneAndUpdate(
             { id: data.id },
             { password: data.password },

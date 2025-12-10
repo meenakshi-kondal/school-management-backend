@@ -15,6 +15,7 @@ const kyc = new Schema({
         type: Date,
         required: true,
     },
+    is_deleted: { type: Number, default: 0, enum:[0,1]}
 }, { timestamps: true });
 
 const TokenSchema = mongoose.model("kyc", kyc);
