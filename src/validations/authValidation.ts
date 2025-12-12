@@ -30,7 +30,7 @@ export const userValidation = Joi.object({
             "any.required": "Gender is required",
             "any.only": "Gender must be male, female, or other",
         }),
-    dateOfBirth: Joi.date()
+    date_of_birth: Joi.date()
         .less("now")
         .required()
         .messages({
@@ -48,7 +48,7 @@ export const userValidation = Joi.object({
         .messages({
             "any.only": "Role must be student or teacher",
         }),
-    joiningDate: Joi.date().required().messages({
+    joining_date: Joi.date().required().messages({
         "any.required": "Joining Date is required",
         "date.base": "Joining Date must be a valid date",
     }),
