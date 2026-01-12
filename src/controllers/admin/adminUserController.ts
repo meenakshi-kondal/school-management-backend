@@ -10,7 +10,7 @@ import {
     teachersListWithPagination,
     teachersListWithoutPagination,
     userDetails
-} from '../../services/adminService';
+} from '../../services/admin/adminUserService';
 
 export const dashboard = async(req: Request, res: Response) => {
 

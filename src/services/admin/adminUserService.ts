@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import UserSchema from '../schema/userSchema';
+import UserSchema from '../../schema/userSchema';
 
 export const getUsersCount = async() => {
 

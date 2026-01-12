@@ -33,15 +33,14 @@ export const registration = async (req: Request, res: Response) => {
             return sendErrorResponse(res, 400, notify.WENT_WRONG);
         }
 
-
-        // send mail to added user
+        // send mail to user
         const sentMail = await sendMail(
             payload.email, credentials.password
         );
         if (!sentMail) {
             return sendErrorResponse(res, 401, notify.WENT_WRONG);
         }
-        return sendSuccessResponse(res, 200, notify.ADDED, {});
+        return sendSuccessResponse(res, 200, notify.ADDED, { email: payload.email, password: credentials.password});
 
     } catch (error: any) {
         return sendErrorResponse(res, 400, error.message);
@@ -113,10 +112,10 @@ export const forgot_password = async (req: Request, res: Response) => {
         const hashedPassword = newPassword.hashedPassword;
         await updatePassword({ password: hashedPassword, email: payload.email });
 
-        // send mail to added user
-        await sendMail(
-            payload.email, newPassword.password
-        );
+        // send mail to user
+        // await sendMail(
+        //     payload.email, newPassword.password
+        // );
 
         return sendSuccessResponse(res, 200, notify.NEW_PASSWORD_SENT, {});
 

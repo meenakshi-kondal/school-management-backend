@@ -8,7 +8,8 @@ const kyc = new Schema({
     documents: { type: [documentSchema], required: true },
     guardian_info: { type: [guardianSchema], required: true },
     address: { type: addressSchema },
-    is_deleted: { type: Number, default: 0, enum:[0,1] }
+    is_deleted: { type: Number, default: 0, enum:[0,1] },
+    status: { type: Number, default: 0, enum: [0,1,2]} // 0:Pending, 1:Approved, 2:Rejected
 }, { timestamps: true });
 
 const KycSchema = mongoose.model("kyc", kyc);
