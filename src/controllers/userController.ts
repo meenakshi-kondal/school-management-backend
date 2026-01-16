@@ -3,7 +3,7 @@ import { sendErrorResponse, sendSuccessResponse } from "../utils/response";
 import { profileDetailValidation } from "../validations/authValidation";
 import { isUser } from "../services/authService";
 import { notify } from "../utils/enum";
-import { getUserClasses, assignment, workAlreadyAssigned } from "../services/userService";
+import { getUserClasses, assignment, workAlreadyAssigned, getAssignment } from "../services/userService";
 import { assignedWorkValidation } from "../validations/userValidation";
 
 // This API will return the profile details of student or teacher
@@ -80,9 +80,26 @@ export const assignedWork = async(req: Request, res: Response) => {
         const assigned = await assignment(payload);
         return sendSuccessResponse(res, 201, notify.ASSIGNED_WORK, assigned );
 
-        
     } catch (error: any) {
         return sendErrorResponse(res, 400, error.message);
     }
 
+}
+
+// This API return the assigned work to student
+export const getAssignedWork = async(req: any, res: Response) =>{
+
+    try {
+        
+        const {class_name, assigned_on} = req.params;
+
+        if(!class_name) return sendErrorResponse(res, 400, notify.CLASS_NAME_REQUIRED);
+
+        const getWork = await getAssignment(req.user._id, class_name, assigned_on);
+
+        return sendSuccessResponse(res, 200, notify.GET, getWork);
+
+    } catch (error: any) {
+        return sendErrorResponse(res, 400, error.message);
+    }
 }

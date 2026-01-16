@@ -21,5 +21,6 @@ export const notify = {
     KYC_PARAM_REQUIRED: 'KYC status and id is required',
     NOT_EXIST: 'This record is not existed',
     KYC_UPDATE: 'KYC updated successfully',
-    KYC_LIST_PARAM: 'Please send the status of kyc'
+    KYC_LIST_PARAM: 'Please send the status of kyc',
+    CLASS_NAME_REQUIRED: 'Class name is required'
 }
