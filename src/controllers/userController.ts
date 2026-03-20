@@ -63,7 +63,7 @@ export const assignedWork = async(req: Request, res: Response) => {
         const { error, value } = assignedWorkValidation.validate(payload);
         if(error) return sendErrorResponse(res, 400, error.details[0].message);
 
-        const isTeacherAssignedToClass = await getUserClasses(payload.assigned_by);
+        const isTeacherAssignedToClass: any = await getUserClasses(payload.assigned_by);
         if(!isTeacherAssignedToClass){
             return sendErrorResponse(res, 400, notify.NOT_USER);
         }
@@ -71,6 +71,7 @@ export const assignedWork = async(req: Request, res: Response) => {
         if(isTeacherAssignedToClass.class != payload.class){
             return sendErrorResponse(res, 400, notify.TEACHER_CLASS_NOT_FOUND);
         }
+
 
         const alreadyAssigned = await workAlreadyAssigned(payload.class, payload.assigned_on, payload.assigned_by);
         if(alreadyAssigned) {

@@ -1,0 +1,49 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+const mongoose_1 = __importStar(require("mongoose"));
+const guardianSchema_1 = require("./guardianSchema");
+const addressSchema_1 = require("./addressSchema");
+const documentSchema_1 = require("./documentSchema");
+const kyc = new mongoose_1.Schema({
+    user_id: { type: mongoose_1.Schema.Types.ObjectId, ref: 'users', required: true },
+    documents: { type: [documentSchema_1.documentSchema], required: true },
+    guardian_info: { type: [guardianSchema_1.guardianSchema], required: true },
+    address: { type: addressSchema_1.addressSchema },
+    is_deleted: { type: Number, default: 0, enum: [0, 1] },
+    status: { type: Number, default: 0, enum: [0, 1, 2] } // 0:Pending, 1:Approved, 2:Rejected
+}, { timestamps: true });
+const KycSchema = mongoose_1.default.model("kyc", kyc);
+exports.default = KycSchema;

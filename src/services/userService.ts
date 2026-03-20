@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import { ASSIGNMENT } from "../interfaces/auth";
 import AssignmentSchema from "../schema/assignmentSchema";
 import UserSchema from "../schema/userSchema";
+import TeacherModel from "../schema/teacherSchema";
+import StudentModel from "../schema/studentSchema";
 
 export const getUserClasses = async (id: string) => {
 
@@ -13,6 +15,8 @@ export const getUserClasses = async (id: string) => {
         throw new Error(error.message);
     }
 };
+
+
 
 export const assignment = async (payload:ASSIGNMENT) => {
 

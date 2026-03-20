@@ -4,7 +4,7 @@ import { authenticate} from "../middlewear/authMiddlewear";
 
 const router = Router();
 
-router.post("/registration", registration);
+router.post("/registration", authenticate, registration);
 router.post("/login", login);
 router.post("/forgot-password", forgot_password);
 router.put("/update-password", authenticate, update_password);

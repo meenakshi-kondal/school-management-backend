@@ -1,0 +1,29 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.notify = void 0;
+exports.notify = {
+    CREATED: 'Record is created successfully',
+    ADDED: 'User added successfully. Please check your email to continue with the application',
+    NOT_USER: 'You are not registered. Please contact your school management',
+    LOGIN: 'Login Successfully',
+    WRONG_PASSWORD: 'Wrong Password',
+    EMAIL_REQUIRED: 'Email is required',
+    NEW_PASSWORD_SENT: 'Password is sent to your email. Please check and log in again',
+    CRED_REQUIRED: 'Please send all required parameters',
+    PASSWORD_UPDATE: 'Password updated successfully',
+    WENT_WRONG: 'Something went wrong',
+    ACCESS_DENIED: 'Access denied. No token provided',
+    EX_TOKEN: 'Invalid or expired token',
+    GET: 'Details get successfully',
+    TEACHER_CLASS_NOT_FOUND: 'You are not able to assign work because you are not assigned to this class',
+    ASSIGNED_WORK: 'Assignment sent successfully',
+    ALLREADY_ASSIGNED_WORK: 'Assignment is already assigned for this date',
+    CLASSNAME_REQUIRED: 'Please send class of user',
+    PAGINATION: 'Pagination parameters are required',
+    ID_REQUIRED: 'User id is required',
+    KYC_PARAM_REQUIRED: 'KYC status and id is required',
+    NOT_EXIST: 'This record is not existed',
+    KYC_UPDATE: 'KYC updated successfully',
+    KYC_LIST_PARAM: 'Please send the status of kyc',
+    CLASS_NAME_REQUIRED: 'Class name is required'
+};

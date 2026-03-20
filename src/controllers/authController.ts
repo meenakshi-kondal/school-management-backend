@@ -1,12 +1,12 @@
 import { isCredentialsExist, isUser, isUserExist, saveToken, saveUser, updatePassword, updatePasswordById } from "../services/authService";
 import { notify } from "../utils/enum";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/response";
-import { loginValidation, userValidation, } from "../validations/authValidation";
+import { loginValidation, studentValidation, teacherValidation, userValidation, } from "../validations/authValidation";
 import { Request, Response } from "express";
-import nodemailer from "nodemailer";
 import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { sendMail } from "../helper/mailHelper";
 dotenv.config();
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET || '';
@@ -17,8 +17,22 @@ export const registration = async (req: Request, res: Response) => {
 
         const payload = req.body;
 
-        const { error, value } = userValidation.validate(payload);
+        // Choose validation based on role
+        let validation = userValidation;
+        if (payload.role === 'student') {
+            validation = studentValidation;
+        } else if (payload.role === 'teacher') {
+            validation = teacherValidation;
+        }
+
+        const { error, value } = validation.validate(payload);
         if (error) return sendErrorResponse(res, 400, error.details[0].message);
+
+        // check if user already exists
+        const userExist = await isUserExist(payload.email);
+        if (userExist) {
+            return sendErrorResponse(res, 400, "User already exists with this email");
+        }
 
         // created unique password
         const credentials = await createPassword();
@@ -34,18 +48,18 @@ export const registration = async (req: Request, res: Response) => {
         }
 
         // send mail to user
-        const sentMail = await sendMail(
+        await sendMail(
             payload.email, credentials.password
         );
-        if (!sentMail) {
-            return sendErrorResponse(res, 401, notify.WENT_WRONG);
-        }
-        return sendSuccessResponse(res, 200, notify.ADDED, { email: payload.email, password: credentials.password});
+
+        // Note: We continue even if mail fails, but log it or return success with credentials
+        return sendSuccessResponse(res, 201, `Added ${payload.role} successfully`, { email: payload.email, password: credentials.password});
 
     } catch (error: any) {
         return sendErrorResponse(res, 400, error.message);
     }
 }
+
 
 export const login = async (req: Request, res: Response) => {
    
@@ -71,12 +85,14 @@ export const login = async (req: Request, res: Response) => {
         const token = jwt.sign(
             { userId: isUser._id, email: isUser.email },
             JWT_SECRET_KEY,
-            { expiresIn: "1h" }
+            { expiresIn: "24h" }
         );
 
         const tokenPayload = {
-            token, user_id: isUser._id.toString()
-        }
+            token, 
+            userId: isUser._id.toString(),
+            expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours expiration Date object
+        };
         await saveToken(tokenPayload);
 
         return sendSuccessResponse(res, 200, notify.LOGIN, { token, user_id: isUser._id, name: isUser.name });
@@ -203,36 +219,5 @@ async function verifyPassword(password: string) {
     }
 }
 
-async function sendMail(email: string, password: string) {
 
-    const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
-        },
-    });
-    const mailOptions = {
-        from: `"My App" <${process.env.EMAIL_USER}>`,
-        to: email,
-        subject: "Your Account Credentials",
-        text: `Hello,\n\nYour account has been created successfully.\n\nUsername: ${email}\nPassword: ${password}\n\nPlease log in and change your password.`,
-        html: `
-      <p>Hello,</p>
-      <p>Your account has been created successfully.</p>
-      <p><b>Username:</b> ${email}</p>
-      <p><b>Password:</b> ${password}</p>
-      <p>Please log in and change your password.</p>
-    `
-    };
-
-    try {
-        const info = await transporter.sendMail(mailOptions);
-        console.log("Email sent:", info.messageId);
-        return true;
-    } catch (error) {
-        console.error("Error sending email:", error);
-        return false;
-    }
-}
 

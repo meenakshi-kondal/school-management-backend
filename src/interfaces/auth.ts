@@ -6,8 +6,10 @@ export interface LOGIN {
 }
 
 export interface TOKEN {
-    user_id: string;
+    user_id?: string;
+    userId?: string;
     token: string;
+    expiresAt?: Date;
 }
 
 interface DOCUMENTS {
