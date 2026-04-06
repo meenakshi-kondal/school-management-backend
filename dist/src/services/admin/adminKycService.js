@@ -37,7 +37,7 @@ const kycListWithPagination = async (status, skipPage, pageLimit, search) => {
             {
                 $lookup: {
                     from: 'user',
-                    localField: 'user_id',
+                    localField: 'userId',
                     foreignField: '_id',
                     as: 'user'
                 }
@@ -74,7 +74,7 @@ const kycListWithoutPagination = async (status, search) => {
             {
                 $lookup: {
                     from: 'user',
-                    localField: 'user_id',
+                    localField: 'userId',
                     foreignField: '_id',
                     as: 'user'
                 }

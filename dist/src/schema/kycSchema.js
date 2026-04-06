@@ -34,13 +34,11 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const guardianSchema_1 = require("./guardianSchema");
 const addressSchema_1 = require("./addressSchema");
-const documentSchema_1 = require("./documentSchema");
 const kyc = new mongoose_1.Schema({
-    user_id: { type: mongoose_1.Schema.Types.ObjectId, ref: 'users', required: true },
-    documents: { type: [documentSchema_1.documentSchema], required: true },
-    guardian_info: { type: [guardianSchema_1.guardianSchema], required: true },
+    userId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'users', required: true },
+    documents: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'documents' }],
+    guardian_id: { type: mongoose_1.Schema.Types.ObjectId, ref: 'guardians' },
     address: { type: addressSchema_1.addressSchema },
     is_deleted: { type: Number, default: 0, enum: [0, 1] },
     status: { type: Number, default: 0, enum: [0, 1, 2] } // 0:Pending, 1:Approved, 2:Rejected

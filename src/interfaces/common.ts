@@ -1,5 +1,5 @@
 export interface PAGINATION {
-    page: string;
-    limit: string;
-    pagination?: boolean;
+	page: string;
+	limit: string;
+	pagination?: boolean;
 }

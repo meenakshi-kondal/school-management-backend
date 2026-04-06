@@ -3,11 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAssignedWork = exports.assignedWork = exports.teacherClasses = exports.profile = void 0;
 const response_1 = require("../utils/response");
 const authValidation_1 = require("../validations/authValidation");
-const authService_1 = require("../services/authService");
 const enum_1 = require("../utils/enum");
 const userService_1 = require("../services/userService");
 const userValidation_1 = require("../validations/userValidation");
-// This API will return the profile details of student or teacher
+// This API will return the profile
 const profile = async (req, res) => {
     try {
         const payload = req.body;
@@ -15,7 +14,7 @@ const profile = async (req, res) => {
         if (error)
             return (0, response_1.sendErrorResponse)(res, 400, error.details[0].message);
         // check id is present in db or not
-        const isUserExist = await (0, authService_1.isUser)(payload.id);
+        const isUserExist = await (0, userService_1.userProfile)(payload.id, payload.role);
         if (!isUserExist) {
             return (0, response_1.sendErrorResponse)(res, 401, enum_1.notify.NOT_USER);
         }

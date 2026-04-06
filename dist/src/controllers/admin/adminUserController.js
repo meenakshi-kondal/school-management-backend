@@ -18,32 +18,30 @@ const dashboard = async (req, res) => {
 exports.dashboard = dashboard;
 const studentsList = async (req, res) => {
     try {
-        const { className, page, limit, pagination, search } = req.params;
-        if (!className)
-            return (0, response_1.sendErrorResponse)(res, 400, enum_1.notify.CLASSNAME_REQUIRED);
+        const { className, page, limit, pagination, search, status, gender } = req.query;
         let allStudents;
-        if (pagination) {
+        if (pagination === 'true' || pagination === true) {
             if (!page || !limit) {
                 return (0, response_1.sendErrorResponse)(res, 404, enum_1.notify.PAGINATION);
             }
             const paginationParam = (0, commonFunction_1.getPagination)(page, limit);
-            allStudents = await (0, adminUserService_1.studentsListWithPagination)(className, paginationParam.skipPage, paginationParam.pageLimit, search);
+            allStudents = await (0, adminUserService_1.studentsListWithPagination)(className, paginationParam.skipPage, paginationParam.pageLimit, search, status, gender);
         }
         else {
-            allStudents = await (0, adminUserService_1.studentsListWithoutPagination)(className, search);
+            allStudents = await (0, adminUserService_1.studentsListWithoutPagination)(className, search, status, gender);
         }
         return (0, response_1.sendSuccessResponse)(res, 200, enum_1.notify.GET, allStudents);
     }
     catch (error) {
-        throw new Error(error.message);
+        return (0, response_1.sendErrorResponse)(res, 400, error.message);
     }
 };
 exports.studentsList = studentsList;
 const teachersList = async (req, res) => {
     try {
-        const { pagination, page, limit, search } = req.params;
+        const { pagination, page, limit, search } = req.query;
         let allTeachers;
-        if (pagination) {
+        if (pagination === 'true' || pagination === true) {
             if (!page || !limit) {
                 return (0, response_1.sendErrorResponse)(res, 404, enum_1.notify.PAGINATION);
             }
@@ -56,23 +54,24 @@ const teachersList = async (req, res) => {
         return (0, response_1.sendSuccessResponse)(res, 200, enum_1.notify.GET, allTeachers);
     }
     catch (error) {
-        throw new Error(error.message);
+        return (0, response_1.sendErrorResponse)(res, 400, error.message);
     }
 };
 exports.teachersList = teachersList;
 const studentDetails = async (req, res) => {
     try {
-        const user_id = req.params.id;
-        if (!user_id) {
-            return (0, response_1.sendErrorResponse)(res, 400, enum_1.notify.ID_REQUIRED);
+        const userId = req.params.id;
+        if (!userId) {
+            return (0, response_1.sendErrorResponse)(res, 400, "User ID is required");
         }
-        const details = await (0, adminUserService_1.userDetails)(user_id);
+        const details = await (0, adminUserService_1.getStudentById)(userId);
         if (!details) {
-            return (0, response_1.sendErrorResponse)(res, 400, enum_1.notify.NOT_USER);
+            return (0, response_1.sendErrorResponse)(res, 400, "Student details not found");
         }
+        return (0, response_1.sendSuccessResponse)(res, 200, enum_1.notify.GET, details);
     }
     catch (error) {
-        throw new Error(error.message);
+        return (0, response_1.sendErrorResponse)(res, 400, error.message);
     }
 };
 exports.studentDetails = studentDetails;

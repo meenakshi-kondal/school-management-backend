@@ -16,7 +16,7 @@ async function sendMail(email, password) {
         },
     });
     const mailOptions = {
-        from: `"My App" <${process.env.EMAIL_USER}>`,
+        from: "AI School",
         to: email,
         subject: "Your Account Credentials",
         text: `Hello,\n\nYour account has been created successfully.\n\nUsername: ${email}\nPassword: ${password}\n\nPlease log in and change your password.`,
@@ -29,12 +29,10 @@ async function sendMail(email, password) {
     `
     };
     try {
-        const info = await transporter.sendMail(mailOptions);
-        console.log("Email sent:", info.messageId);
+        await transporter.sendMail(mailOptions);
         return true;
     }
     catch (error) {
-        console.error("Error sending email:", error);
         return false;
     }
 }

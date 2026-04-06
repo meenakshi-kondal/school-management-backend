@@ -25,5 +25,17 @@ exports.notify = {
     NOT_EXIST: 'This record is not existed',
     KYC_UPDATE: 'KYC updated successfully',
     KYC_LIST_PARAM: 'Please send the status of kyc',
-    CLASS_NAME_REQUIRED: 'Class name is required'
+    CLASS_NAME_REQUIRED: 'Class name is required',
+    CLASS_EXIST: 'Class already exist',
+    CLASS_ADDED: 'Class added successfully',
+    CLASS_FETCH: 'Classes fetched successfully',
+    CLASS_NOT_FOUND: 'Class not found',
+    CLASS_UPDATED: 'Class updated successfully',
+    NOTICE_TITLE_REQUIRED: 'Title is required',
+    NOTICE_ADDED: 'Notice added successfully',
+    NOTICE_FETCH: 'Notices fetched successfully',
+    NOTICE_NOT_FOUND: 'Notice not found',
+    NOTICE_UPDATED: 'Notice updated successfully',
+    NOTICE_DELETED: 'Notice deleted successfully',
+    NOTICE_MARKED: 'Notice marked successfully'
 };

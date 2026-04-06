@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authMiddlewear_1 = require("../middlewear/authMiddlewear");
+const adminUserController_1 = require("../controllers/admin/adminUserController");
+const router = (0, express_1.Router)();
+router.get("/dashboard", authMiddlewear_1.authenticate, adminUserController_1.dashboard);
+router.get("/students-list", authMiddlewear_1.authenticate, adminUserController_1.studentsList);
+router.get("/teachers-list", authMiddlewear_1.authenticate, adminUserController_1.teachersList);
+router.get("/student-details/:id", authMiddlewear_1.authenticate, adminUserController_1.studentDetails);
+exports.default = router;

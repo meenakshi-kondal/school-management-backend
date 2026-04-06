@@ -3,17 +3,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.profileDetailValidation = exports.loginValidation = exports.userValidation = exports.teacherValidation = exports.studentValidation = void 0;
+exports.profileDetailValidation = exports.loginValidation = exports.userValidation = exports.adminValidation = exports.teacherValidation = exports.studentValidation = void 0;
 const joi_1 = __importDefault(require("joi"));
-const qualificationValidation = joi_1.default.object({
-    institue_name: joi_1.default.string().required(),
-    degree: joi_1.default.string().required(),
-    year: joi_1.default.number().integer().min(1900).max(new Date().getFullYear()),
-    board: joi_1.default.string().required(),
-});
-const classValidation = joi_1.default.object({
-    class_name: joi_1.default.string().required(),
-    subjects: joi_1.default.array().items().min(1).required()
+const guardianValidation = joi_1.default.object({
+    father_name: joi_1.default.string(),
+    mother_name: joi_1.default.string(),
+    email: joi_1.default.string().email(),
+    phone: joi_1.default.string().required(),
+    occupation: joi_1.default.string(),
+    aadhaar_card: joi_1.default.string(),
 });
 const commonUserFields = {
     name: joi_1.default.string()
@@ -45,39 +43,51 @@ const commonUserFields = {
         "any.required": "Email is required",
         "string.email": "Email must be a valid email address",
     }),
-    joining_date: joi_1.default.date().required().messages({
-        "any.required": "Joining Date is required",
-        "date.base": "Joining Date must be a valid date",
-    }),
+    blood_group: joi_1.default.string().valid('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'),
+    phone: joi_1.default.string(),
+    photo: joi_1.default.string(),
 };
 exports.studentValidation = joi_1.default.object({
     ...commonUserFields,
     role: joi_1.default.string().valid("student").default("student"),
     is_bus_service: joi_1.default.boolean().default(false),
-    class: joi_1.default.array().items(classValidation).min(1).required().messages({
+    class_id: joi_1.default.string().required().messages({
         "any.required": "Class is required",
-        "array.min": "At least one class must be selected",
     }),
+    joining_date: joi_1.default.date().required().messages({
+        "any.required": "Admission Date is required",
+        "date.base": "Admission Date must be a valid date",
+    }),
+    guardian: guardianValidation,
 }).required().messages({
     "any.required": "Please send all details",
 });
 exports.teacherValidation = joi_1.default.object({
     ...commonUserFields,
     role: joi_1.default.string().valid("teacher").default("teacher"),
-    qualification: joi_1.default.array().items(qualificationValidation).min(1).required().messages({
-        "any.required": "Qualification is required",
-        "array.min": "At least one qualification must be selected",
+    joining_date: joi_1.default.date().required().messages({
+        "any.required": "Joining Date is required",
+        "date.base": "Joining Date must be a valid date",
     }),
+    experience: joi_1.default.number().min(0).default(0),
+    class: joi_1.default.array().items(joi_1.default.string()),
 }).required().messages({
     "any.required": "Please send all details",
 });
-// For backward compatibility or general user (admin)
+// Admin registration — minimal fields
+exports.adminValidation = joi_1.default.object({
+    name: joi_1.default.string().min(3).max(30).required(),
+    email: joi_1.default.string().email().required(),
+    role: joi_1.default.string().valid("admin").default("admin"),
+}).required();
+// General user validation (backward compatibility)
 exports.userValidation = joi_1.default.object({
     ...commonUserFields,
     role: joi_1.default.string().valid("student", "teacher", "admin").default("student"),
     is_bus_service: joi_1.default.boolean().default(false),
-    class: joi_1.default.array().items(classValidation),
-    qualification: joi_1.default.array().items(qualificationValidation),
+    class_id: joi_1.default.string(),
+    joining_date: joi_1.default.date(),
+    guardian: guardianValidation,
 }).required();
 exports.loginValidation = joi_1.default.object({
     username: joi_1.default.string().email().required(),
@@ -87,4 +97,5 @@ exports.loginValidation = joi_1.default.object({
 });
 exports.profileDetailValidation = joi_1.default.object({
     id: joi_1.default.string().required(),
+    role: joi_1.default.string().valid("student", "teacher", "admin").required(),
 }).required();

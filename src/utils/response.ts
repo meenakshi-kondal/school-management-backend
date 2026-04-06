@@ -1,25 +1,25 @@
 import { Response } from "express";
 
 export const sendErrorResponse = (
-  res: Response,
-  statusCode: number,
-  message: string
+	res: Response,
+	statusCode: number,
+	message: string
 ) => {
-  return res.status(statusCode).json({
-    success: false,
-    message,
-  });
+	return res.status(statusCode).json({
+		success: false,
+		message,
+	});
 };
 
 export const sendSuccessResponse = (
-  res: Response,
-  statusCode: number,
-  message: string,
-  body: {}
+	res: Response,
+	statusCode: number,
+	message: string,
+	body: {}
 ) => {
-  return res.status(statusCode).json({
-    success: true,
-    message,
-    data: body
-  });
+	return res.status(statusCode).json({
+		success: true,
+		message,
+		data: body
+	});
 };

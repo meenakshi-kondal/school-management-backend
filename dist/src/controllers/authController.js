@@ -14,6 +14,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const mailHelper_1 = require("../helper/mailHelper");
 dotenv_1.default.config();
 const JWT_SECRET_KEY = process.env.JWT_SECRET || '';
+/* This API is used for the teacher and students admission in school */
 const registration = async (req, res) => {
     try {
         const payload = req.body;
@@ -25,16 +26,19 @@ const registration = async (req, res) => {
         else if (payload.role === 'teacher') {
             validation = authValidation_1.teacherValidation;
         }
+        else if (payload.role === 'admin') {
+            validation = authValidation_1.adminValidation;
+        }
         const { error, value } = validation.validate(payload);
         if (error)
             return (0, response_1.sendErrorResponse)(res, 400, error.details[0].message);
-        // check if user already exists
-        const userExist = await (0, authService_1.isUserExist)(payload.email);
-        if (userExist) {
-            return (0, response_1.sendErrorResponse)(res, 400, "User already exists with this email");
+        // check if user already exists for that role
+        const userExistResult = await (0, authService_1.isUserExist)(payload.email, payload.role);
+        if (userExistResult) {
+            return (0, response_1.sendErrorResponse)(res, 400, `User already exists with this email for the role of ${payload.role}`);
         }
         // created unique password
-        const credentials = await createPassword();
+        const credentials = await createPassword(payload.role);
         if (!credentials) {
             return (0, response_1.sendErrorResponse)(res, 400, enum_1.notify.WENT_WRONG);
         }
@@ -45,7 +49,7 @@ const registration = async (req, res) => {
             return (0, response_1.sendErrorResponse)(res, 400, enum_1.notify.WENT_WRONG);
         }
         // send mail to user
-        const sentMail = await (0, mailHelper_1.sendMail)(payload.email, credentials.password);
+        await (0, mailHelper_1.sendMail)(payload.email, credentials.password);
         // Note: We continue even if mail fails, but log it or return success with credentials
         return (0, response_1.sendSuccessResponse)(res, 201, `Added ${payload.role} successfully`, { email: payload.email, password: credentials.password });
     }
@@ -61,21 +65,23 @@ const login = async (req, res) => {
         if (error)
             return (0, response_1.sendErrorResponse)(res, 400, error.details[0].message);
         // check user is exist or not
-        const isUser = await (0, authService_1.isUserExist)(payload.username);
-        if (!isUser) {
+        const user = await (0, authService_1.isUserExist)(payload.username);
+        if (!user) {
             return (0, response_1.sendErrorResponse)(res, 401, enum_1.notify.NOT_USER);
         }
-        const isMatch = await bcryptjs_1.default.compare(payload.password, isUser.password);
+        const isMatch = await bcryptjs_1.default.compare(payload.password, user.password);
         if (!isMatch) {
             return (0, response_1.sendErrorResponse)(res, 401, enum_1.notify.WRONG_PASSWORD);
         }
         // generate token
-        const token = jsonwebtoken_1.default.sign({ userId: isUser._id, email: isUser.email }, JWT_SECRET_KEY, { expiresIn: "1h" });
+        const token = jsonwebtoken_1.default.sign({ userId: user._id, email: user.email, role: user.role }, JWT_SECRET_KEY, { expiresIn: "24h" });
         const tokenPayload = {
-            token, user_id: isUser._id.toString()
+            token,
+            userId: user._id.toString(),
+            expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours expiration Date object
         };
         await (0, authService_1.saveToken)(tokenPayload);
-        return (0, response_1.sendSuccessResponse)(res, 200, enum_1.notify.LOGIN, { token, user_id: isUser._id, name: isUser.name });
+        return (0, response_1.sendSuccessResponse)(res, 200, enum_1.notify.LOGIN, { token, userId: user._id, name: user.name, role: user.role });
     }
     catch (error) {
         return (0, response_1.sendErrorResponse)(res, 400, error.message);
@@ -139,7 +145,7 @@ const update_password = async (req, res) => {
     }
 };
 exports.update_password = update_password;
-async function createPassword() {
+async function createPassword(role) {
     try {
         const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         while (true) {
@@ -151,14 +157,13 @@ async function createPassword() {
             const salt = await bcryptjs_1.default.genSalt(10);
             const hashedPassword = await bcryptjs_1.default.hash(password, salt);
             // check if hashed password exists in DB
-            const exists = await (0, authService_1.isCredentialsExist)(hashedPassword);
+            const exists = await (0, authService_1.isCredentialsExist)(hashedPassword, role);
             if (!exists) {
                 return { password, hashedPassword };
             }
         }
     }
     catch (error) {
-        console.log(error);
         return null;
     }
 }

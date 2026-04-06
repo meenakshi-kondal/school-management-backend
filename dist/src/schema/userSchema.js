@@ -34,20 +34,12 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const baseOptions = {
-    discriminatorKey: 'role',
-    timestamps: true,
-};
-const user = new mongoose_1.Schema({
-    name: { type: String, required: true },
+const userSchema = new mongoose_1.Schema({
     email: { type: String, required: true, unique: true },
-    gender: { type: String, enum: ['male', 'female', 'other'], required: true },
-    date_of_birth: { type: Date, required: true },
-    role: { type: String, enum: ['teacher', 'student', 'admin'], default: 'admin' },
-    joining_date: { type: Date, required: true },
     password: { type: String, required: true },
-    status: { type: String, enum: ['enable', 'disable'], default: 'enable' },
     is_deleted: { type: Number, default: 0, enum: [0, 1] }
-}, baseOptions);
-const UserSchema = mongoose_1.default.model('users', user);
-exports.default = UserSchema;
+}, {
+    timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
+});
+const UserModel = mongoose_1.default.model('users', userSchema);
+exports.default = UserModel;

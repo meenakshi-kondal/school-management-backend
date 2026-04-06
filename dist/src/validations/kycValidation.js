@@ -14,7 +14,7 @@ const guardianValidation = joi_1.default.object({
     occupation: joi_1.default.string().required(),
 });
 exports.kycValidtaion = joi_1.default.object({
-    user_id: { type: String, required: true },
+    userId: { type: String, required: true },
     guardian: joi_1.default.array().items(guardianValidation).min(1).required(),
     documents: joi_1.default.array().items(commonValidation_1.documentValidation).min(1).required(),
     phone: joi_1.default.string().pattern(/^[0-9]{10}$/),

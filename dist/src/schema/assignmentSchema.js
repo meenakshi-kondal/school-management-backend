@@ -34,7 +34,12 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const documentSchema_1 = require("./documentSchema");
+// Inline attachment schema for assignment files (not the same as the documents collection)
+const attachmentSchema = new mongoose_1.Schema({
+    document_name: { type: String, required: true },
+    file_url: { type: String, required: true },
+    uploadedAt: { type: Date, default: Date.now }
+});
 const assignment = new mongoose_1.Schema({
     assigned_type: {
         type: String, enum: ['ALL', 'INDIVIDUAL', 'GROUP'],
@@ -52,7 +57,7 @@ const assignment = new mongoose_1.Schema({
     class: { type: String, required: true },
     subject: { type: String, required: true },
     work: { type: String, required: true },
-    attachment: [documentSchema_1.documentSchema],
+    attachment: [attachmentSchema],
     assigned_on: { type: Date, default: Date.now },
     is_deleted: { type: Number, default: 0, enum: [0, 1] }
 });

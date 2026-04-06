@@ -46,7 +46,7 @@ export const kycListWithPagination = async (
             {
                 $lookup: {
                     from: 'user',
-                    localField: 'user_id',
+                    localField: 'userId',
                     foreignField: '_id',
                     as: 'user'
                 }
@@ -87,7 +87,7 @@ export const kycListWithoutPagination = async (status: number, search: string) =
             {
                 $lookup: {
                     from: 'user',
-                    localField: 'user_id',
+                    localField: 'userId',
                     foreignField: '_id',
                     as: 'user'
                 }

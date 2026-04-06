@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const noticeController_1 = require("../controllers/noticeController");
+const authMiddlewear_1 = require("../middlewear/authMiddlewear");
+const router = (0, express_1.Router)();
+router.post("/add-notice", authMiddlewear_1.authenticate, noticeController_1.addNotice);
+router.get("/all-notices", authMiddlewear_1.authenticate, noticeController_1.noticeList);
+router.delete("/delete-notice/:id", authMiddlewear_1.authenticate, noticeController_1.deleteNotice);
+router.post("/read-notice/:id", authMiddlewear_1.authenticate, noticeController_1.markNoticeAsRead);
+exports.default = router;

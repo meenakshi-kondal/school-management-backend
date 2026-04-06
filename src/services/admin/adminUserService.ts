@@ -1,16 +1,20 @@
 import mongoose from 'mongoose';
-import UserSchema from '../../schema/userSchema';
 import StudentModel from '../../schema/studentSchema';
+import TeacherModel from '../../schema/teacherSchema';
+import UserModel from '../../schema/userSchema';
+import GuardianModel from '../../schema/guardianSchema';
+import DocumentModel from '../../schema/documentSchema';
 
 export const getUsersCount = async() => {
 
     try {
-
-        const counts = await UserSchema.aggregate([
-            { $match: { status: 'enable', is_deleted: 0 } },
-            { $group: { _id: '$type',total: { $sum: 1 }} }
-        ]);
-        return counts;
+        const studentCount = await StudentModel.countDocuments({ status: 'enable', is_deleted: 0 });
+        const teacherCount = await TeacherModel.countDocuments({ status: 'enable', is_deleted: 0 });
+        
+        return [
+            { _id: 'student', total: studentCount },
+            { _id: 'teacher', total: teacherCount },
+        ];
 
     } catch (error: any) {
         throw new Error(error.message);
@@ -20,13 +24,13 @@ export const getUsersCount = async() => {
 export const getAllUsersCount = async() => {
 
     try {
-
-        const counts = await UserSchema.aggregate([
-            {
-                $group: { _id: '$type',total: { $sum: 1 }}
-            }
-        ]);
-        return counts;
+        const studentCount = await StudentModel.countDocuments();
+        const teacherCount = await TeacherModel.countDocuments();
+    
+        return [
+            { _id: 'student', total: studentCount },
+            { _id: 'teacher', total: teacherCount }
+        ];
 
     } catch (error: any) {
         throw new Error(error.message);
@@ -45,16 +49,11 @@ export const studentsListWithPagination = async(
     try {
         const filter: any = {
             status: 'enable',
-            is_deleted: 0,
-            role: 'student'
+            is_deleted: 0
         };
 
         if (className) {
             filter['class_id'] = className;
-        }
-
-        if (status) {
-            filter['attendance_status'] = status;
         }
 
         if (gender) {
@@ -64,7 +63,6 @@ export const studentsListWithPagination = async(
         if (search && search.trim() !== '') {
             const searchRegex = { $regex: search, $options: 'i' };
             const orConditions: any[] = [
-                { email: searchRegex },
                 { name: searchRegex }
             ];
 
@@ -76,17 +74,19 @@ export const studentsListWithPagination = async(
             filter.$or = orConditions;
         }
 
-        const list = await UserSchema.find(filter)
-            .select('-password')
+        const list = await StudentModel.find(filter)
+            .populate({ path: 'userId', select: 'email' })
+            .populate({ path: 'guardian_id' })
+            .populate({ path: 'class_id', select: 'class_name' })
             .skip(skipPage)
             .limit(pageLimit)
-            .sort({ roll_number: 1 }); // Sorting by roll number makes more sense now
+            .sort({ roll_number: 1 });
 
-        const total = await UserSchema.countDocuments(filter);
+        const total = await StudentModel.countDocuments(filter);
         
         // Get gender counts for the filtered class (ignoring pagination)
         const countsFilter = { ...filter };
-        const genderCounts = await UserSchema.aggregate([
+        const genderCounts = await StudentModel.aggregate([
             { $match: countsFilter },
             { $group: { _id: '$gender', count: { $sum: 1 } } }
         ]);
@@ -109,16 +109,11 @@ export const studentsListWithoutPagination = async(className: string, search: st
     try {
         const filter: any = {
             status: 'enable',
-            is_deleted: 0,
-            role: 'student'
+            is_deleted: 0
         };
 
         if (className) {
             filter['class_id'] = className;
-        }
-
-        if (status) {
-            filter['attendance_status'] = status;
         }
 
         if (gender) {
@@ -128,7 +123,6 @@ export const studentsListWithoutPagination = async(className: string, search: st
         if (search && search.trim() !== '') {
             const searchRegex = { $regex: search, $options: 'i' };
             const orConditions: any[] = [
-                { email: searchRegex },
                 { name: searchRegex }
             ];
             
@@ -139,8 +133,9 @@ export const studentsListWithoutPagination = async(className: string, search: st
             filter.$or = orConditions;
         }
 
-        const list = await UserSchema.find(filter)
-            .select('-password')
+        const list = await StudentModel.find(filter)
+            .populate({ path: 'userId', select: 'email' })
+            .populate({ path: 'guardian_id' })
             .sort({ roll_number: 1 });
 
         return list;
@@ -157,25 +152,25 @@ export const teachersListWithPagination = async(
 ) => {
 
     try {
-        
-        let subquery = UserSchema.find({
-            type: 'teacher',
+        const filter: any = {
             status: 'enable',
             is_deleted: 0
-        });
+        };
 
-        if(search && search.trim() !== '') {
-
-            subquery = UserSchema.find({
-                $or:[
-                    { name: { $regex: search, $options: 'i'} },
-                    { class: { $regex: search, $options: 'i'} },
-                ]
-            })
+        if (search && search.trim() !== '') {
+            const searchRegex = { $regex: search, $options: 'i' };
+            filter.$or = [
+                { name: searchRegex }
+            ];
         }
 
-        const list = await subquery.select('-password').skip(skipPage).limit(pageLimit);
-        return list;
+        const list = await TeacherModel.find(filter)
+            .populate({ path: 'userId', select: 'email' })
+            .skip(skipPage)
+            .limit(pageLimit);
+        
+        const total = await TeacherModel.countDocuments(filter);
+        return { list, total };
 
     } catch (error: any) {
         throw new Error(error.message);
@@ -185,24 +180,20 @@ export const teachersListWithPagination = async(
 export const teachersListWithoutPagination = async(search: string) => {
 
     try {
-        
-        let subquery = UserSchema.find({
-            type: 'teacher',
+        const filter: any = {
             status: 'enable',
             is_deleted: 0
-        });
+        };
 
-        if(search && search.trim() !== '') {
-
-            subquery = UserSchema.find({
-                $or:[
-                    { name: { $regex: search, $options: 'i'} },
-                    { class: { $regex: search, $options: 'i'} },
-                ]
-            })
+        if (search && search.trim() !== '') {
+            const searchRegex = { $regex: search, $options: 'i' };
+            filter.$or = [
+                { name: searchRegex }
+            ];
         }
 
-        const list = await subquery.select('-password');
+        const list = await TeacherModel.find(filter)
+            .populate({ path: 'userId', select: 'email' });
         return list;
 
     } catch (error: any) {
@@ -213,32 +204,31 @@ export const teachersListWithoutPagination = async(search: string) => {
 export const userDetails = async(id: string) => {
 
     try {
-
-        const user_id = new mongoose.Types.ObjectId(id);
-        const details = await UserSchema.aggregate([
-            {
-                $match: {_id: user_id}
-            },
-            {
-                $lookup: {
-                    from: 'kycs',
-                    localField: '_id',
-                    foreignField: 'user_id',
-                    as: 'kycDetails'
-                }
-            },
-            {
-                $unwind: {
-                    path: "$kyc_details",
-                    preserveNullAndEmptyArrays: true
-                }
-            },
-            {
-                $project: {
-                    password: 0
-                }
-            }
+        const userId = new mongoose.Types.ObjectId(id);
+        
+        // Try student profile first
+        let details = await StudentModel.aggregate([
+            { $match: { userId: userId } },
+            { $lookup: { from: 'users', localField: 'userId', foreignField: '_id', as: 'userInfo' } },
+            { $unwind: { path: '$userInfo', preserveNullAndEmptyArrays: true } },
+            { $lookup: { from: 'guardians', localField: 'guardian_id', foreignField: '_id', as: 'guardianInfo' } },
+            { $unwind: { path: '$guardianInfo', preserveNullAndEmptyArrays: true } },
+            { $lookup: { from: 'documents', localField: 'userId', foreignField: 'userId', as: 'documents' } },
+            { $lookup: { from: 'classes', localField: 'class_id', foreignField: '_id', as: 'class_info' } },
+            { $unwind: { path: '$class_info', preserveNullAndEmptyArrays: true } },
+            { $project: { 'userInfo.password': 0 } }
         ]);
+
+        if (details.length === 0) {
+            // Try teacher profile
+            details = await TeacherModel.aggregate([
+                { $match: { userId: userId } },
+                { $lookup: { from: 'users', localField: 'userId', foreignField: '_id', as: 'userInfo' } },
+                { $unwind: { path: '$userInfo', preserveNullAndEmptyArrays: true } },
+                { $lookup: { from: 'documents', localField: 'userId', foreignField: 'userId', as: 'documents' } },
+                { $project: { 'userInfo.password': 0 } }
+            ]);
+        }
 
         return details;
 
@@ -249,28 +239,23 @@ export const userDetails = async(id: string) => {
 
 export const getStudentById = async (id: string) => {
     try {
-        const student = await (StudentModel as any).aggregate([
+        const student = await StudentModel.aggregate([
             { $match: { _id: new mongoose.Types.ObjectId(id) } },
-            {
-                $addFields: {
-                    classObjId: { 
-                        $cond: {
-                            if: { $ne: ["$class_id", null] },
-                            then: { $toObjectId: "$class_id" },
-                            else: null
-                        }
-                    }
-                }
-            },
+            { $lookup: { from: 'users', localField: 'userId', foreignField: '_id', as: 'userInfo' } },
+            { $unwind: { path: '$userInfo', preserveNullAndEmptyArrays: true } },
+            { $lookup: { from: 'guardians', localField: 'guardian_id', foreignField: '_id', as: 'guardianInfo' } },
+            { $unwind: { path: '$guardianInfo', preserveNullAndEmptyArrays: true } },
+            { $lookup: { from: 'documents', localField: 'userId', foreignField: 'userId', as: 'documents' } },
             {
                 $lookup: {
                     from: 'classes',
-                    localField: 'classObjId',
+                    localField: 'class_id',
                     foreignField: '_id',
                     as: 'class_info'
                 }
             },
-            { $unwind: { path: '$class_info', preserveNullAndEmptyArrays: true } }
+            { $unwind: { path: '$class_info', preserveNullAndEmptyArrays: true } },
+            { $project: { 'userInfo.password': 0 } }
         ]);
         return student.length > 0 ? student[0] : null;
     } catch (error: any) {

@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const classController_1 = require("../controllers/classController");
+const authMiddlewear_1 = require("../middlewear/authMiddlewear");
+const router = (0, express_1.Router)();
+router.post("/add-class", authMiddlewear_1.authenticate, classController_1.addClass);
+router.get("/all-classes", authMiddlewear_1.authenticate, classController_1.getClasses);
+router.put("/update-class/:id", authMiddlewear_1.authenticate, classController_1.updateClass);
+exports.default = router;
